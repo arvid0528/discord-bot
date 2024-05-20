@@ -48,11 +48,15 @@ class MyClient(discord.Client):
                 await message.reply("the fuck you want?")
                 return
             
+        try: 
             if dc.negations_amount(raw_msg)%2==0:
                 await message.channel.send(gpt.get_compliment(raw_msg, message.author))
             else:
                 await message.channel.send(gpt.get_insult(raw_msg, message.author))
-            
+        except Exception as e:
+            with open("logfile.txt", "w") as f:
+                f.write(e)
+
 intents = discord.Intents.default()
 intents.message_content = True
 

@@ -6,6 +6,8 @@ import asyncio
 import directedcomments as dc 
 import reddit_scrape
 import gpt
+import traceback
+
 
 swearwords = ["fuck", "shit", "cunt", "dick", "cum", "piss", "ass", "hell", "cock", "slut", "prick", "bitch", ]
 compliment_comments = []
@@ -13,6 +15,12 @@ compliment_comments = []
 class MyClient(discord.Client):
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
+
+    async def on_error(event, *args, **kwargs):
+        message = args[0] #Gets the message object
+        with open("logfile.txt", "w") as f:
+                f.write(str(message))
+        await message.channel.send(client.get_user(226412002866757642) + " help i made a stinky")
 
     async def on_message(self, message):
         print(f'Message from {message.author}: {message.content}')
@@ -55,7 +63,7 @@ class MyClient(discord.Client):
                 await message.channel.send(gpt.get_insult(raw_msg, message.author))
         except Exception as e:
             with open("logfile.txt", "w") as f:
-                f.write(e)
+                f.write(str(e))
 
 intents = discord.Intents.default()
 intents.message_content = True

@@ -3,8 +3,12 @@ import insultgen
 import quotegen
 import bullshit
 import asyncio
+import directedcomments as dc 
+import reddit_scrape
+import gpt
 
-swearwords = ["fuck", "shit", "cunt", "dick", "cum", "piss", "ass", "hell"]
+swearwords = ["fuck", "shit", "cunt", "dick", "cum", "piss", "ass", "hell", "cock", "slut", "prick", "bitch", ]
+compliment_comments = []
 
 class MyClient(discord.Client):
     async def on_ready(self):
@@ -39,9 +43,16 @@ class MyClient(discord.Client):
         if raw_msg.find("sad") >= 0:
             await message.channel.send(quotegen.generate_quote())
 
-        
-
-
+        if raw_msg.find("willy") >= 0 or raw_msg.find(client.get_user(1228039945239924756).mention) >= 0: 
+            if not dc.contains_positive_adjective(raw_msg):
+                await message.reply("the fuck you want?")
+                return
+            
+            if dc.negations_amount(raw_msg)%2==0:
+                await message.channel.send(gpt.get_compliment(raw_msg, message.author))
+            else:
+                await message.channel.send(gpt.get_insult(raw_msg, message.author))
+            
 intents = discord.Intents.default()
 intents.message_content = True
 

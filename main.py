@@ -16,12 +16,6 @@ class MyClient(discord.Client):
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
 
-    async def on_error(event, *args, **kwargs):
-        message = args[0] #Gets the message object
-        with open("logfile.txt", "w") as f:
-                f.write(str(message))
-        await message.channel.send(client.get_user(226412002866757642) + " help i made a stinky")
-
     async def on_message(self, message):
         print(f'Message from {message.author}: {message.content}')
         
@@ -61,9 +55,10 @@ class MyClient(discord.Client):
                 await message.channel.send(gpt.get_compliment(raw_msg, message.author))
             else:
                 await message.channel.send(gpt.get_insult(raw_msg, message.author))
-        except Exception as e:
+        except Exception:
+            print(traceback.format_exc())
             with open("logfile.txt", "w") as f:
-                f.write(str(e))
+                f.write(traceback.format_exc())
 
 intents = discord.Intents.default()
 intents.message_content = True

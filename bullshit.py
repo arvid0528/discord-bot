@@ -1,11 +1,13 @@
 import json
 from json.decoder import JSONDecodeError
+import os
+import pathlib
 
 def increase_bullshit_meter(user):
 
     data = {"user":[]}
 
-    with open("bullshitmeters.json", "r") as fr:
+    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "bullshitmeters.json"), "r") as fr:
         try:
             data = json.load(fr)
         except JSONDecodeError:
@@ -22,7 +24,7 @@ def increase_bullshit_meter(user):
     if meter_level == -1:
         data["user"].append({str(user):1})
 
-    with open("bullshitmeters.json", "w") as fw:
+    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "bullshitmeters.json"), "w") as fw:
         json.dump(data, fw)
 
     if meter_level%10 == 0:

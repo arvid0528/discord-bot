@@ -1,8 +1,10 @@
+import os
+import pathlib
 
 def contains_positive_adjective(msg):
     msg_as_word_list = msg.split(" ")
 
-    with open("positive_adjectives.txt") as f:
+    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "positive_adjectives.txt")) as f:
         for i, line in enumerate(f):
             for word in msg_as_word_list:
                 if word.lower() == line[:-1].lower():

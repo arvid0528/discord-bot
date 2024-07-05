@@ -1,9 +1,11 @@
 from random import randint
+import os
+import pathlib
 
 def get_random_positive_adjective():
     adj_i = randint(0, 747)
     adj = ""
-    with open("adjectives.txt", "r") as f:
+    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "adjectives.txt"), "r") as f:
         for i, line in enumerate(f):
             if i == adj_i:
                 adj = line
@@ -15,7 +17,7 @@ def get_random_positive_adjective():
 def get_random_noun():
     noun_i = randint(0, 1410)
     noun = ""
-    with open("nouns.txt", "r") as f:
+    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "nouns.txt"), "r") as f:
             for i, line in enumerate(f):
                 if i == noun_i:
                     noun = line

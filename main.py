@@ -80,16 +80,17 @@ class MyClient(discord.Client):
         except Exception: 
             print(traceback.format_exc())
             await message.channel.send(master_user.mention+" help i made a stinky")
-            with open("logfile.txt", "w") as f:
+            with open(os.path.join(cur_dir, "logfile.txt"), "w") as f:
                 f.write(str(datetime.datetime.now())+"\n")
                 f.write(traceback.format_exc())
 
+cur_dir = pathlib.Path(__file__).parent.resolve()
 
 intents = discord.Intents.default()
 intents.message_content = True
 
 client = MyClient(intents=intents)
 
-with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "botkey.txt"), "r") as f:
+with open(os.path.join(cur_dir, "botkey.txt"), "r") as f:
     botkey = f.readline()
 client.run(botkey)

@@ -1,10 +1,12 @@
 from random import randint
+import os
+import pathlib
 
 def generate_quote():
         
     quote_i = randint(0, 165)
 
-    with open("quotes.txt", "r") as f:
+    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "quotes.txt"), "r") as f:
         for i, line in enumerate(f):
             if i == quote_i:
                 quote = line

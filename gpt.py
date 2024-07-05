@@ -1,7 +1,9 @@
 import openai 
+import os
+import pathlib
 
 def setup_gpt():
-    with open("gptkey.txt", "r") as f:
+    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "gptkey.txt"), "r") as f:
         gptkey = f.readline()
 
     openai.api_key = gptkey

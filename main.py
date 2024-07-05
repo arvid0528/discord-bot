@@ -20,6 +20,8 @@ class MyClient(discord.Client):
         print(f'Message from {message.author}: {message.content}')
         
         raw_msg = message.content.lower()
+
+        master_user = await client.fetch_user(226412002866757642)
         
         if message.author == client.user:
             return
@@ -47,29 +49,37 @@ class MyClient(discord.Client):
             if raw_msg.find("sad") >= 0:
                 await message.channel.send(quotegen.generate_quote())
 
+            if raw_msg.find("voice") >= 0:
+                voice_state = message.author.voice
+                if voice_state:
+                    await voice_state.channel.connect()
+
             if raw_msg.find("willy") >= 0 or raw_msg.find(client.get_user(1228039945239924756).mention) >= 0: 
                 if not dc.contains_positive_adjective(raw_msg):
                     await message.reply("the fuck you want?")
-                    return
-
-                if dc.negations_amount(raw_msg)%2==0:
+                    
+                """ if dc.negations_amount(raw_msg)%2==0:
                     await message.channel.send(gpt.get_compliment(raw_msg, message.author))
                 else:
-                    await message.channel.send(gpt.get_insult(raw_msg, message.author))
+                    await message.channel.send(gpt.get_insult(raw_msg, message.author)) """
             
-            if raw_msg.find("raise-error") >= 0:
+            if raw_msg == "raise-error" >= 0:
                 raise Exception
+            
+            if raw_msg.find("wheres the poop") >= 0 and message.author == master_user:
+                with open("logfile.txt", "r") as f:
+                    log_msg = ""
+                    for line in f:
+                        log_msg += line + "\n"
+                    await message.channel.send(log_msg)
 
         except Exception: 
             print(traceback.format_exc())
-            master = await client.fetch_user(226412002866757642)
-            await message.channel.send(master.mention+" help i made a stinky")
+            await message.channel.send(master_user.mention+" help i made a stinky")
             with open("logfile.txt", "w") as f:
                 f.write(str(datetime.datetime.now())+"\n")
                 f.write(traceback.format_exc())
-            
-            #TODO: make command to have the bot spit out the error message
-            # as a dm maybe? 
+
 
 intents = discord.Intents.default()
 intents.message_content = True

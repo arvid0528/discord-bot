@@ -11,7 +11,7 @@ import datetime
 import pathlib
 import os
 
-swearwords = ["fuck", "shit", "cunt", "dick", "cum", "piss", "ass", "hell", "cock", "slut", "prick", "bitch", ]
+swearwords = ["fuck", "shit", "cunt", "dick", "cum", "piss", "ass", "hell", "cock", "slut", "prick", "bitch", "sex", "nigga"]
 compliment_comments = []
 
 class MyClient(discord.Client):
@@ -42,7 +42,7 @@ class MyClient(discord.Client):
                     break
             
             if raw_msg.find("nut") >= 0:
-                f = discord.File(open("elephant.png","rb"))
+                f = discord.File(open(os.path.join(cur_dir, "elephant.png"),"rb"))
                 await message.channel.send(file=f)
 
             if raw_msg.find("among") >= 0:
@@ -71,7 +71,7 @@ class MyClient(discord.Client):
                 raise Exception
             
             if raw_msg.find("wheres the poop") >= 0 and message.author == master_user:
-                with open("logfile.txt", "r") as f:
+                with open(os.path.join(cur_dir, "logfile.txt"), "r") as f:
                     log_msg = ""
                     for line in f:
                         log_msg += line + "\n"

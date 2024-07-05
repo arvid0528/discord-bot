@@ -8,6 +8,8 @@ import reddit_scrape
 import gpt
 import traceback
 import datetime
+import pathlib
+import os
 
 swearwords = ["fuck", "shit", "cunt", "dick", "cum", "piss", "ass", "hell", "cock", "slut", "prick", "bitch", ]
 compliment_comments = []
@@ -88,6 +90,6 @@ intents.message_content = True
 
 client = MyClient(intents=intents)
 
-with open("botkey.txt", "r") as f:
+with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "botkey.txt"), "r") as f:
     botkey = f.readline()
 client.run(botkey)

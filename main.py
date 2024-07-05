@@ -55,9 +55,11 @@ class MyClient(discord.Client):
                     await voice_state.channel.connect()
 
             if raw_msg.find("willy") >= 0 or raw_msg.find(client.get_user(1228039945239924756).mention) >= 0: 
-                if not dc.contains_positive_adjective(raw_msg):
+                if dc.contains_positive_adjective(raw_msg):
+                    await message.reply("{} {}'s on my shi".format(insultgen.get_random_positive_adjective(), insultgen.get_random_noun()))
+                else:
                     await message.reply("the fuck you want?")
-                    
+
                 """ if dc.negations_amount(raw_msg)%2==0:
                     await message.channel.send(gpt.get_compliment(raw_msg, message.author))
                 else:

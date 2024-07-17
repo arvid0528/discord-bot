@@ -2,10 +2,22 @@ from random import randint
 import os
 import pathlib
 
+def get_random_negative_adjective():
+    adj_i = randint(0, 747)
+    adj = ""
+    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "negative_adjectives.txt"), "r") as f:
+        for i, line in enumerate(f):
+            if i == adj_i:
+                adj = line
+                break
+            if i >= 747:
+                break
+    return adj[:-1]
+
 def get_random_positive_adjective():
     adj_i = randint(0, 747)
     adj = ""
-    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "adjectives.txt"), "r") as f:
+    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "posivite_adjectives.txt"), "r") as f:
         for i, line in enumerate(f):
             if i == adj_i:
                 adj = line
@@ -28,7 +40,7 @@ def get_random_noun():
 
 def generate_insult(member):
     vowels = "aeio"
-    adj = get_random_positive_adjective()
+    adj = get_random_negative_adjective()
     noun = get_random_noun()
     
     if adj[0].lower() in vowels:
@@ -36,7 +48,7 @@ def generate_insult(member):
     else:
         msg = " is a "
     
-    msg += adj.lower()[:-1] + " " + noun.lower()
+    msg += adj.lower() + " " + noun.lower()
     print(member.mention + msg)
     
     return member.mention + msg

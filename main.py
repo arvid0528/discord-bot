@@ -1,26 +1,29 @@
 import discord # type: ignore
-import insultgen
-import quotegen
 import bullshit
 import asyncio
-import directedcomments as dc 
 import reddit_scrape
 import gpt
 import traceback
 import datetime
 import pathlib
 import os
+import random
+import wordfiles as wf
+import webscrape
 
 swearwords = ["fuck", "shit", "cunt", "dick", "cum", "piss", "ass", "hell", "cock", "slut", "prick", "bitch", "sex", "nigga"]
 compliment_comments = []
 
 class MyClient(discord.Client):
+    
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
 
     async def on_message(self, message):
         print(f'Message from {message.author}: {message.content}')
         
+        message.attachments
+
         raw_msg = message.content.lower()
 
         master_user = await client.fetch_user(226412002866757642)
@@ -36,9 +39,9 @@ class MyClient(discord.Client):
             for word in swearwords:
                 if raw_msg.find(word) >= 0:
                     if bullshit.increase_bullshit_meter(message.author):
-                        msg = insultgen.generate_insult(message.author)
+                        msg = wf.generate_insult(message.author)
                         channel = client.guilds[0].text_channels[0]
-                        await channel.send(msg)
+                        await message.channel.send(msg)
                     break
             
             if raw_msg.find("nut") >= 0:
@@ -49,7 +52,7 @@ class MyClient(discord.Client):
                 await message.add_reaction("🤨")
         
             if raw_msg.find("sad") >= 0:
-                await message.channel.send(quotegen.generate_quote())
+                await message.channel.send(wf.generate_quote())
 
             if raw_msg.find("voice") >= 0:
                 voice_state = message.author.voice
@@ -57,10 +60,21 @@ class MyClient(discord.Client):
                     await voice_state.channel.connect()
 
             if raw_msg.find("willy") >= 0 or raw_msg.find(client.get_user(1228039945239924756).mention) >= 0: 
-                if dc.contains_positive_adjective(raw_msg):
-                    await message.reply("{} {}'s on my shi".format(insultgen.get_random_positive_adjective(), insultgen.get_random_noun()))
+                if wf.sentence_contains_word_in_file("positive_adjectives.txt", raw_msg):
+                    await message.reply("{} {}'s on my shi".format(wf.get_random_positive_adjective(), wf.get_random_noun()))
+                elif wf.sentence_contains_word_in_file("negative_adjectives.txt", raw_msg):
+                    await message.reply(wf.get_random_noun())
                 else:
-                    await message.reply("the fuck you want?")
+                    rand = random.randint(1, 10)
+                    if rand <= 3:
+                        await message.reply(wf.generate_quote())
+                    elif rand <= 6:
+                        await message.reply("{} {}".format(wf.get_random_positive_adjective(), wf.get_random_noun()))
+                    elif rand <= 9:
+                        await message.reply("{} {}".format(wf.get_random_negative_adjective(), wf.get_random_noun()))
+                    else:
+                        await message.channel.send(webscrape.get_random_wiki_page_first_sentence())
+
 
                 """ if dc.negations_amount(raw_msg)%2==0:
                     await message.channel.send(gpt.get_compliment(raw_msg, message.author))

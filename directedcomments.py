@@ -1,6 +1,16 @@
 import os
 import pathlib
 
+def sentence_contains_word_in_file(filename, sentence):
+    sentence_as_word_list = sentence.split(" ")
+
+    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), filename)) as f:
+        for i, line in enumerate(f):
+            for word in sentence_as_word_list:
+                if word.lower() == line[:-1].lower():
+                    return True
+        return False
+
 def contains_positive_adjective(msg):
     msg_as_word_list = msg.split(" ")
 

@@ -85,13 +85,13 @@ class MyClient(discord.Client):
                 timestamp = time.time()
                 
                 if wf.sentence_contains_word_in_file("positive_adjectives.txt", raw_msg):
-                    await message.reply("{} {}'s on my shi".format(wf.get_random_positive_adjective(), wf.get_random_noun()))
+                    await message.reply("{} {}'s on my shi".format(wf.get_random_line_in_file("positive_adjectives.txt"), wf.get_random_line_in_file("nouns.txt")))
                 elif wf.sentence_contains_word_in_file("negative_adjectives.txt", raw_msg):
                     await message.reply(wf.get_random_line_in_file("nouns.txt"))
                 else:
                     rand = random.randint(1, 10)
                     if rand <= 3:
-                        await message.reply(wf.get_random_line_in_file("quotes.txt"))
+                        await message.reply(wf.generate_quote())
                     elif rand <= 6:
                         await message.reply("{} {}".format(wf.get_random_line_in_file("positive_adjectives.txt"), wf.get_random_line_in_file("nouns.txt")))
                     elif rand <= 9:

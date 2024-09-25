@@ -8,56 +8,6 @@ def get_random_line_in_file(filename):
     rand_line = random.choice(lines)
     return rand_line
 
-'''
-def get_random_negative_adjective():
-    adj_i = randint(0, 747)
-    adj = ""
-    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "negative_adjectives.txt"), "r") as f:
-        lines = len(f.readlines())
-        rand_index = randint(0, lines-1)
-        print(f.readlines(rand_index))
-        for i, line in enumerate(f):
-            if i == adj_i:
-                adj = line
-                break
-            if i >= 747:
-                break
-    return adj[:-1]
-'''
-def get_random_negative_adjective():
-    adj_i = randint(0, 747)
-    adj = ""
-    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "negative_adjectives.txt"), "r") as f:
-        for i, line in enumerate(f):
-            if i == adj_i:
-                adj = line
-                break
-            if i >= 747:
-                break
-    return adj[:-1]
-def get_random_positive_adjective():
-    adj_i = randint(0, 432)
-    adj = ""
-    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "positive_adjectives.txt"), "r") as f:
-        for i, line in enumerate(f):
-            if i == adj_i:
-                adj = line
-                break
-            if i >= 432:
-                break
-    return adj[:-1]
-
-def get_random_noun():
-    noun_i = randint(0, 1410)
-    noun = ""
-    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "nouns.txt"), "r") as f:
-            for i, line in enumerate(f):
-                if i == noun_i:
-                    noun = line
-                    break
-                if i >= 1410:
-                    break
-    return noun[:-1]
 
 def generate_insult(member):
     vowels = "aeio"
@@ -112,15 +62,7 @@ def negations_amount(msg):
 
 def generate_quote():
         
-    quote_i = randint(0, 165)
-
-    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "quotes.txt"), "r") as f:
-        for i, line in enumerate(f):
-            if i == quote_i:
-                quote = line
-                break
-            if i >= 165:
-                break
+    quote = get_random_line_in_file("quotes.txt")
     
     dash_i = quote.find('" -')
 

@@ -15,6 +15,8 @@ import webscrape
 import time
 import datetime
 
+VERSION_NUMBER = 0.1
+
 swearwords = ["fuck", "shit", "cunt", "dick", "cum", "piss", "ass", "hell", "cock", "slut", "prick", "bitch", "sex", "nigga", "nigger"]
 compliment_comments = []
 
@@ -26,7 +28,6 @@ class MyClient(discord.Client):
     
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
-        #await wait_for_poll()
         client.loop.create_task(wait_for_poll())
 
     async def on_message(self, message):
@@ -48,6 +49,9 @@ class MyClient(discord.Client):
             return
         
         try: 
+            
+            if raw_msg == "/willysize":
+                await message.channel.send(VERSION_NUMBER)
 
             if raw_msg.find("table") >= 0:
                 await message.channel.send("┬─┬")
@@ -56,7 +60,6 @@ class MyClient(discord.Client):
                 if raw_msg.find(word) >= 0:
                     if bullshit.increase_bullshit_meter(message.author):
                         msg = wf.generate_insult(message.author)
-                        channel = client.guilds[0].text_channels[0]
                         await message.channel.send(msg)
                     break
             
@@ -84,23 +87,17 @@ class MyClient(discord.Client):
                 if wf.sentence_contains_word_in_file("positive_adjectives.txt", raw_msg):
                     await message.reply("{} {}'s on my shi".format(wf.get_random_positive_adjective(), wf.get_random_noun()))
                 elif wf.sentence_contains_word_in_file("negative_adjectives.txt", raw_msg):
-                    await message.reply(wf.get_random_noun())
+                    await message.reply(wf.get_random_line_in_file("nouns.txt"))
                 else:
                     rand = random.randint(1, 10)
                     if rand <= 3:
-                        await message.reply(wf.generate_quote())
+                        await message.reply(wf.get_random_line_in_file("quotes.txt"))
                     elif rand <= 6:
-                        await message.reply("{} {}".format(wf.get_random_positive_adjective(), wf.get_random_noun()))
+                        await message.reply("{} {}".format(wf.get_random_line_in_file("positive_adjectives.txt"), wf.get_random_line_in_file("nouns.txt")))
                     elif rand <= 9:
-                        await message.reply("{} {}".format(wf.get_random_negative_adjective(), wf.get_random_noun()))
+                        await message.reply("{} {}".format(wf.get_random_line_in_file("negative_adjectives.txt"), wf.get_random_line_in_file("nouns.txt")))
                     else:
                         await message.channel.send(webscrape.get_random_wiki_page_first_sentence())
-
-
-                """ if dc.negations_amount(raw_msg)%2==0:
-                    await message.channel.send(gpt.get_compliment(raw_msg, message.author))
-                else:
-                    await message.channel.send(gpt.get_insult(raw_msg, message.author)) """
             
             if raw_msg == "raise-error" >= 0:
                 raise Exception

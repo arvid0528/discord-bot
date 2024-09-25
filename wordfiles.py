@@ -1,21 +1,12 @@
-from random import randint
+import random
 import os
 import pathlib
 
 def get_random_line_in_file(filename):
-    #TODO: Make this general
-    adj_i = randint(0, 747)
-    adj = ""
-    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "negative_adjectives.txt"), "r") as f:
-        lines = len(f.readlines())
-        rand_index = randint(0, lines-1)
-        for i, line in enumerate(f):
-            if i == adj_i:
-                adj = line
-                break
-            if i >= 747:
-                break
-    return adj[:-1]
+    path = os.path.join(pathlib.Path(__file__).parent.resolve(), filename)
+    lines = list(open(path, "r", encoding="utf-8"))
+    rand_line = random.choice(lines)
+    return rand_line
 
 '''
 def get_random_negative_adjective():
@@ -70,8 +61,8 @@ def get_random_noun():
 
 def generate_insult(member):
     vowels = "aeio"
-    adj = get_random_negative_adjective()
-    noun = get_random_noun()
+    adj = get_random_line_in_file("negative_adjectives.txt")
+    noun = get_random_line_in_file("nouns.txt")
     
     if adj.lower() in vowels:
         msg = " is an "

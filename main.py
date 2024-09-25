@@ -131,7 +131,7 @@ async def create_poll_message():
 async def wait_for_poll():
     while True:
         now = datetime.datetime.now()
-        if now.hour == 15 and now.minute== 22 and now.second == 5:
+        if now.hour == 17 and now.minute== 0 and now.second == 0:
             await create_poll_message()
             await asyncio.sleep(1)
         await asyncio.sleep(0.5)

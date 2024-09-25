@@ -1,6 +1,8 @@
-import discord # type: ignore
+import discord
+import discord.ext.commands   # type: ignore
 import bullshit
 import asyncio
+import discord.ext
 import reddit_scrape
 import gpt
 import traceback
@@ -10,14 +12,22 @@ import os
 import random
 import wordfiles as wf
 import webscrape
+import time
+import datetime
 
-swearwords = ["fuck", "shit", "cunt", "dick", "cum", "piss", "ass", "hell", "cock", "slut", "prick", "bitch", "sex", "nigga"]
+swearwords = ["fuck", "shit", "cunt", "dick", "cum", "piss", "ass", "hell", "cock", "slut", "prick", "bitch", "sex", "nigga", "nigger"]
 compliment_comments = []
+
+polling_channel = None
+
+timestamp = time.time()
 
 class MyClient(discord.Client):
     
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
+        #await wait_for_poll()
+        client.loop.create_task(wait_for_poll())
 
     async def on_message(self, message):
         print(f'Message from {message.author}: {message.content}')
@@ -28,6 +38,12 @@ class MyClient(discord.Client):
 
         master_user = await client.fetch_user(226412002866757642)
         
+        print(message.channel.id)
+        if message.author == client.user and message.channel.id == 1282059605320536148:
+            await message.add_reaction("✅")
+            await message.add_reaction("❔")
+            await message.add_reaction("❌")
+
         if message.author == client.user:
             return
         
@@ -50,16 +66,21 @@ class MyClient(discord.Client):
 
             if raw_msg.find("among") >= 0:
                 await message.add_reaction("🤨")
-        
+
             if raw_msg.find("sad") >= 0:
                 await message.channel.send(wf.generate_quote())
-
+            '''
             if raw_msg.find("voice") >= 0:
                 voice_state = message.author.voice
                 if voice_state:
                     await voice_state.channel.connect()
-
-            if raw_msg.find("willy") >= 0 or raw_msg.find(client.get_user(1228039945239924756).mention) >= 0: 
+            '''
+            global timestamp
+            now = time.time()
+            if now - timestamp >= 10 and  (raw_msg.find("willy") >= 0 or raw_msg.find(client.get_user(1228039945239924756).mention) >= 0): 
+                
+                timestamp = time.time()
+                
                 if wf.sentence_contains_word_in_file("positive_adjectives.txt", raw_msg):
                     await message.reply("{} {}'s on my shi".format(wf.get_random_positive_adjective(), wf.get_random_noun()))
                 elif wf.sentence_contains_word_in_file("negative_adjectives.txt", raw_msg):
@@ -98,6 +119,24 @@ class MyClient(discord.Client):
                 f.write(str(datetime.datetime.now())+"\n")
                 f.write(traceback.format_exc())
 
+
+async def create_poll_message():
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    channel = discord.Client.get_channel(client, 1282059605320536148)
+    now = datetime.datetime.now()
+    day = now + datetime.timedelta(days=7)
+    await channel.send("Poll for **{}**  {}".format(days[int(day.weekday())], str(day.date())))
+
+
+async def wait_for_poll():
+    while True:
+        now = datetime.datetime.now()
+        if now.hour == 15 and now.minute== 22 and now.second == 5:
+            await create_poll_message()
+            await asyncio.sleep(1)
+        await asyncio.sleep(0.5)
+
+
 cur_dir = pathlib.Path(__file__).parent.resolve()
 
 intents = discord.Intents.default()
@@ -107,4 +146,6 @@ client = MyClient(intents=intents)
 
 with open(os.path.join(cur_dir, "botkey.txt"), "r") as f:
     botkey = f.readline()
+
+#client.loop.create_task(wait_for_poll())
 client.run(botkey)

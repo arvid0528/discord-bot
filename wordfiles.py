@@ -17,12 +17,14 @@ def get_random_line_in_file(filename):
                 break
     return adj[:-1]
 
+'''
 def get_random_negative_adjective():
     adj_i = randint(0, 747)
     adj = ""
     with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "negative_adjectives.txt"), "r") as f:
         lines = len(f.readlines())
         rand_index = randint(0, lines-1)
+        print(f.readlines(rand_index))
         for i, line in enumerate(f):
             if i == adj_i:
                 adj = line
@@ -30,16 +32,27 @@ def get_random_negative_adjective():
             if i >= 747:
                 break
     return adj[:-1]
-
-def get_random_positive_adjective():
+'''
+def get_random_negative_adjective():
     adj_i = randint(0, 747)
+    adj = ""
+    with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "negative_adjectives.txt"), "r") as f:
+        for i, line in enumerate(f):
+            if i == adj_i:
+                adj = line
+                break
+            if i >= 747:
+                break
+    return adj[:-1]
+def get_random_positive_adjective():
+    adj_i = randint(0, 432)
     adj = ""
     with open(os.path.join(pathlib.Path(__file__).parent.resolve(), "positive_adjectives.txt"), "r") as f:
         for i, line in enumerate(f):
             if i == adj_i:
                 adj = line
                 break
-            if i >= 747:
+            if i >= 432:
                 break
     return adj[:-1]
 
@@ -60,7 +73,7 @@ def generate_insult(member):
     adj = get_random_negative_adjective()
     noun = get_random_noun()
     
-    if adj[0].lower() in vowels:
+    if adj.lower() in vowels:
         msg = " is an "
     else:
         msg = " is a "

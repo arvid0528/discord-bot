@@ -3,3 +3,4 @@ __pycache__
 .venv
 gptkey.txt
 logfile.txt
+env/

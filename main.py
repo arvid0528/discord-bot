@@ -22,13 +22,110 @@ compliment_comments = []
 
 polling_channel = None
 
+schedule_channel_id = 1282059605320536148
+graph_channel_id = 1291708916073496637
+
 timestamp = time.time()
+
+async def check_reactions():
+    schedule_channel = discord.Client.get_channel(client, schedule_channel_id)
+    graph_channel = discord.Client.get_channel(client, graph_channel_id)
+
+    messages = [msg async for msg in schedule_channel.history(limit=7)]
+    color_list = [["day", "grey"] for i in range(7)]
+    for i in range(len(messages)):
+        no_reactions = discord.utils.get(messages[i].reactions, emoji='❌')
+        maybe_reactions = discord.utils.get(messages[i].reactions, emoji='❔')
+        yes_reactions = discord.utils.get(messages[i].reactions, emoji='✅')
+        weekday = messages[i].content.split(" ")[2][2:-2]
+        color_list[i][0] = weekday
+        # only one 'no' is needed to make the day red
+        if no_reactions.count > 1:
+            color_list[i][1] = "red"
+            continue
+        
+        # Not everyone has reacted, keep it grey
+        if no_reactions.count + maybe_reactions.count + yes_reactions.count != 6:
+            continue
+
+        if maybe_reactions.count > 1:
+            color_list[i][1] = "orange"
+            continue
+
+        if yes_reactions.count == 4:
+            color_list[i][1] = "green"
+
+    color_list.reverse()
+
+    # TODO: Only post new graph if data has changed 
+    msg_string = ""
+    for daycolor in color_list:
+        if daycolor[1] == "red":
+            msg_string += "🟥 "
+        elif daycolor[1] == "orange":
+            msg_string += "🟧 "
+        elif daycolor[1] == "green":
+            msg_string += "🟩 "
+        elif daycolor[1] == "grey":
+            msg_string += "⬜ "
+        msg_string += daycolor[0]
+        msg_string += "\n"
+
+    print(msg_string)
+
+    last_graph = await graph_channel.fetch_message(graph_channel.last_message_id)
+    await last_graph.delete()
+
+    await discord.Client.get_channel(client, graph_channel_id).send(msg_string)
+
+    await asyncio.sleep(10)
+    await check_reactions()
+
 
 class MyClient(discord.Client):
     
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
         client.loop.create_task(wait_for_poll())
+        client.loop.create_task(check_reactions())
+
+    async def on_reaction_add(self, reaction, user):
+        ''' Runs when a message has a reaction added to it. Used for scheduling. '''
+        
+        channel_id = reaction.message.channel.id
+
+        if channel_id != schedule_channel_id:
+            return
+        
+        '''
+
+        List structure: 
+        [
+        {date: 5/10, yes: 1, maybe: 2, no: 0}, 
+        {date: ...},
+        etc.
+        ]
+        
+        1. figure out which message was reacted to
+        2. figure out who reacted
+        3. figure out what they reacted (keep in mind that users might have multiple reactions to the same message)
+        4. change the value of the correct key (user) in the correct index (date) (this will make only the latest reaction count, which is fine)
+        
+
+        color codes:
+            light grey - not enough answers
+            red - No
+            orange - maybe
+            green - yes 
+
+        list_of_messages = [last 7 messages]
+        
+        list_of_outputs = [7 grey]
+        
+        for each message:
+            
+
+        '''
 
     async def on_message(self, message):
         print(f'Message from {message.author}: {message.content}')
@@ -39,8 +136,7 @@ class MyClient(discord.Client):
 
         master_user = await client.fetch_user(226412002866757642)
         
-        print(message.channel.id)
-        if message.author == client.user and message.channel.id == 1282059605320536148:
+        if message.author == client.user and message.channel.id == schedule_channel_id:
             await message.add_reaction("✅")
             await message.add_reaction("❔")
             await message.add_reaction("❌")
@@ -119,7 +215,7 @@ class MyClient(discord.Client):
 
 async def create_poll_message():
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    channel = discord.Client.get_channel(client, 1282059605320536148)
+    channel = discord.Client.get_channel(client, schedule_channel_id)
     now = datetime.datetime.now()
     day = now + datetime.timedelta(days=7)
     await channel.send("Poll for **{}**  {}".format(days[int(day.weekday())], str(day.date())))

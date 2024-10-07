@@ -24,58 +24,66 @@ polling_channel = None
 
 schedule_channel_id = 1282059605320536148
 graph_channel_id = 1291708916073496637
+bot_test_channel_id = 1161870771262587012
 
 timestamp = time.time()
 
 async def check_reactions():
-    schedule_channel = discord.Client.get_channel(client, schedule_channel_id)
-    graph_channel = discord.Client.get_channel(client, graph_channel_id)
+    try: 
+        schedule_channel = discord.Client.get_channel(client, schedule_channel_id)
+        graph_channel = discord.Client.get_channel(client, graph_channel_id)
 
-    messages = [msg async for msg in schedule_channel.history(limit=7)]
-    color_list = [["day", "grey"] for i in range(7)]
-    for i in range(len(messages)):
-        no_reactions = discord.utils.get(messages[i].reactions, emoji='❌')
-        maybe_reactions = discord.utils.get(messages[i].reactions, emoji='❔')
-        yes_reactions = discord.utils.get(messages[i].reactions, emoji='✅')
-        weekday = messages[i].content.split(" ")[2][2:-2]
-        color_list[i][0] = weekday
-        # only one 'no' is needed to make the day red
-        if no_reactions.count > 1:
-            color_list[i][1] = "red"
-            continue
-        
-        # Not everyone has reacted, keep it grey
-        if no_reactions.count + maybe_reactions.count + yes_reactions.count != 6:
-            continue
+        messages = [msg async for msg in schedule_channel.history(limit=7)]
+        color_list = [["day", "grey"] for i in range(7)]
+        for i in range(len(messages)):
+            no_reactions = discord.utils.get(messages[i].reactions, emoji='❌')
+            maybe_reactions = discord.utils.get(messages[i].reactions, emoji='❔')
+            yes_reactions = discord.utils.get(messages[i].reactions, emoji='✅')
+            weekday = messages[i].content.split(" ")[2][2:-2]
+            color_list[i][0] = weekday
+            # only one 'no' is needed to make the day red
+            if no_reactions.count > 1:
+                color_list[i][1] = "red"
+                continue
+            
+            # Not everyone has reacted, keep it grey
+            if no_reactions.count + maybe_reactions.count + yes_reactions.count != 6:
+                continue
 
-        if maybe_reactions.count > 1:
-            color_list[i][1] = "orange"
-            continue
+            if maybe_reactions.count > 1:
+                color_list[i][1] = "orange"
+                continue
 
-        if yes_reactions.count == 4:
-            color_list[i][1] = "green"
+            if yes_reactions.count == 4:
+                color_list[i][1] = "green"
 
-    color_list.reverse()
+        color_list.reverse()
 
-    # TODO: Only post new graph if data has changed 
-    msg_string = ""
-    for daycolor in color_list:
-        if daycolor[1] == "red":
-            msg_string += "🟥 "
-        elif daycolor[1] == "orange":
-            msg_string += "🟧 "
-        elif daycolor[1] == "green":
-            msg_string += "🟩 "
-        elif daycolor[1] == "grey":
-            msg_string += "⬜ "
-        msg_string += daycolor[0]
-        msg_string += "\n"
+        # TODO: Only post new graph if data has changed 
+        msg_string = ""
+        for daycolor in color_list:
+            if daycolor[1] == "red":
+                msg_string += "🟥 "
+            elif daycolor[1] == "orange":
+                msg_string += "🟧 "
+            elif daycolor[1] == "green":
+                msg_string += "🟩 "
+            elif daycolor[1] == "grey":
+                msg_string += "⬜ "
+            msg_string += daycolor[0]
+            msg_string += "\n"
 
-    last_graph = await graph_channel.fetch_message(graph_channel.last_message_id)
-    await last_graph.edit(content=msg_string)
+        last_graph = await graph_channel.fetch_message(graph_channel.last_message_id)
+        await last_graph.edit(content=msg_string)
 
-    await asyncio.sleep(10)
-    await check_reactions()
+        await asyncio.sleep(10)
+        await check_reactions()
+    except Exception:
+        print(traceback.format_exc())
+        bot_test_channel = discord.Client.get_channel(client, bot_test_channel_id)
+        await bot_test_channel.send("check_reations crashed: \n ", traceback.format_exc())
+        await check_reactions()
+
 
 
 class MyClient(discord.Client):

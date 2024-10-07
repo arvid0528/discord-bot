@@ -71,12 +71,8 @@ async def check_reactions():
         msg_string += daycolor[0]
         msg_string += "\n"
 
-    print(msg_string)
-
     last_graph = await graph_channel.fetch_message(graph_channel.last_message_id)
-    await last_graph.delete()
-
-    await discord.Client.get_channel(client, graph_channel_id).send(msg_string)
+    await last_graph.edit(content=msg_string)
 
     await asyncio.sleep(10)
     await check_reactions()

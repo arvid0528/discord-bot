@@ -29,61 +29,70 @@ bot_test_channel_id = 1161870771262587012
 timestamp = time.time()
 
 async def check_reactions():
+    print("Running check_reactions()")
     try: 
-        schedule_channel = discord.Client.get_channel(client, schedule_channel_id)
-        graph_channel = discord.Client.get_channel(client, graph_channel_id)
+        while True:
+            go_next_iter = False
+            schedule_channel = discord.Client.get_channel(client, schedule_channel_id)
+            graph_channel = discord.Client.get_channel(client, graph_channel_id)
 
-        messages = [msg async for msg in schedule_channel.history(limit=7)]
-        color_list = [["day", "grey"] for i in range(7)]
-        for i in range(len(messages)):
-            no_reactions = discord.utils.get(messages[i].reactions, emoji='❌')
-            maybe_reactions = discord.utils.get(messages[i].reactions, emoji='❔')
-            yes_reactions = discord.utils.get(messages[i].reactions, emoji='✅')
-            weekday = messages[i].content.split(" ")[2][2:-2]
-            color_list[i][0] = weekday
-            # only one 'no' is needed to make the day red
-            if no_reactions.count > 1:
-                color_list[i][1] = "red"
+            messages = [msg async for msg in schedule_channel.history(limit=7)]
+            color_list = [["day", "grey"] for i in range(7)]
+            for i in range(len(messages)):
+                no_reactions = discord.utils.get(messages[i].reactions, emoji='❌')
+                maybe_reactions = discord.utils.get(messages[i].reactions, emoji='❔')
+                yes_reactions = discord.utils.get(messages[i].reactions, emoji='✅')
+                
+                if no_reactions is None or maybe_reactions is None or yes_reactions is None: 
+                    await asyncio.sleep(1)
+                    go_next_iter = True
+                    break
+                
+                weekday = messages[i].content.split(" ")[2][2:-2]
+                color_list[i][0] = weekday
+                # only one 'no' is needed to make the day red
+                if no_reactions.count > 1:
+                    color_list[i][1] = "red"
+                    continue
+                
+                # Not everyone has reacted, keep it grey
+                if no_reactions.count + maybe_reactions.count + yes_reactions.count != 6:
+                    continue
+
+                if maybe_reactions.count > 1:
+                    color_list[i][1] = "orange"
+                    continue
+
+                if yes_reactions.count == 4:
+                    color_list[i][1] = "green"
+
+            if go_next_iter:
                 continue
-            
-            # Not everyone has reacted, keep it grey
-            if no_reactions.count + maybe_reactions.count + yes_reactions.count != 6:
-                continue
 
-            if maybe_reactions.count > 1:
-                color_list[i][1] = "orange"
-                continue
+            color_list.reverse()
 
-            if yes_reactions.count == 4:
-                color_list[i][1] = "green"
+            # TODO: Only post new graph if data has changed 
+            msg_string = ""
+            for daycolor in color_list:
+                if daycolor[1] == "red":
+                    msg_string += "🟥 "
+                elif daycolor[1] == "orange":
+                    msg_string += "🟧 "
+                elif daycolor[1] == "green":
+                    msg_string += "🟩 "
+                elif daycolor[1] == "grey":
+                    msg_string += "⬜ "
+                msg_string += daycolor[0]
+                msg_string += "\n"
 
-        color_list.reverse()
-
-        # TODO: Only post new graph if data has changed 
-        msg_string = ""
-        for daycolor in color_list:
-            if daycolor[1] == "red":
-                msg_string += "🟥 "
-            elif daycolor[1] == "orange":
-                msg_string += "🟧 "
-            elif daycolor[1] == "green":
-                msg_string += "🟩 "
-            elif daycolor[1] == "grey":
-                msg_string += "⬜ "
-            msg_string += daycolor[0]
-            msg_string += "\n"
-
-        last_graph = await graph_channel.fetch_message(graph_channel.last_message_id)
-        await last_graph.edit(content=msg_string)
-
-        await asyncio.sleep(10)
-        await check_reactions()
+            last_graph = await graph_channel.fetch_message(graph_channel.last_message_id)
+            await last_graph.edit(content=msg_string)
+            await asyncio.sleep(10)
     except Exception:
         print(traceback.format_exc())
         bot_test_channel = discord.Client.get_channel(client, bot_test_channel_id)
-        await bot_test_channel.send("check_reations crashed: \n ", traceback.format_exc())
-        await check_reactions()
-
+        await bot_test_channel.send("check_reations crashed: \n " + traceback.format_exc())
+        
 
 
 class MyClient(discord.Client):
@@ -92,6 +101,7 @@ class MyClient(discord.Client):
         print(f'Logged on as {self.user}!')
         client.loop.create_task(wait_for_poll())
         client.loop.create_task(check_reactions())
+        print("exited on_ready()")
 
     async def on_reaction_add(self, reaction, user):
         ''' Runs when a message has a reaction added to it. Used for scheduling. '''
@@ -149,7 +159,10 @@ class MyClient(discord.Client):
             return
         
         try: 
-            
+
+            #if message.author == master_user and raw_msg[]"/manualmode":
+
+
             if raw_msg == "/willysize":
                 await message.channel.send(VERSION_NUMBER)
 

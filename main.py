@@ -126,6 +126,9 @@ class MyClient(discord.Client):
                 arg = message.content[13:]
                 if cmd == "send":
                     await message.channel.send(arg)
+                elif cmd == "wiki":
+                    await message.channel.send(webscrape.get_random_wiki_page_first_sentence())
+
 
             if raw_msg == "/willysize":
                 await message.channel.send(VERSION_NUMBER)

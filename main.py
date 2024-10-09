@@ -149,12 +149,7 @@ class MyClient(discord.Client):
 
             if raw_msg.find("sad") >= 0:
                 await message.channel.send(wf.generate_quote())
-            '''
-            if raw_msg.find("voice") >= 0:
-                voice_state = message.author.voice
-                if voice_state:
-                    await voice_state.channel.connect()
-            '''
+            
             global timestamp
             now = time.time()
             if now - timestamp >= 10 and  (raw_msg.find("willy") >= 0 or raw_msg.find(client.get_user(1228039945239924756).mention) >= 0): 
@@ -162,7 +157,7 @@ class MyClient(discord.Client):
                 timestamp = time.time()
                 
                 if wf.sentence_contains_word_in_file("positive_adjectives.txt", raw_msg):
-                    await message.reply("{} {}'s on my shi".format(wf.get_random_line_in_file("positive_adjectives.txt"), wf.get_random_line_in_file("nouns.txt")))
+                    await message.reply("{} {} on my shi".format(wf.get_random_line_in_file("positive_adjectives.txt"), wf.get_random_line_in_file("nouns.txt")))
                 elif wf.sentence_contains_word_in_file("negative_adjectives.txt", raw_msg):
                     await message.reply(wf.get_random_line_in_file("nouns.txt"))
                 else:

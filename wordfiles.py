@@ -6,6 +6,10 @@ def get_random_line_in_file(filename):
     path = os.path.join(pathlib.Path(__file__).parent.resolve(), filename)
     lines = list(open(path, "r", encoding="utf-8"))
     rand_line = random.choice(lines)
+    print(rand_line)
+    while "\n" in rand_line:
+        rand_line = rand_line[:-1]
+    print(rand_line)
     return rand_line
 
 

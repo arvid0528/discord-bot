@@ -103,44 +103,6 @@ class MyClient(discord.Client):
         client.loop.create_task(check_reactions())
         print("exited on_ready()")
 
-    async def on_reaction_add(self, reaction, user):
-        ''' Runs when a message has a reaction added to it. Used for scheduling. '''
-        
-        channel_id = reaction.message.channel.id
-
-        if channel_id != schedule_channel_id:
-            return
-        
-        '''
-
-        List structure: 
-        [
-        {date: 5/10, yes: 1, maybe: 2, no: 0}, 
-        {date: ...},
-        etc.
-        ]
-        
-        1. figure out which message was reacted to
-        2. figure out who reacted
-        3. figure out what they reacted (keep in mind that users might have multiple reactions to the same message)
-        4. change the value of the correct key (user) in the correct index (date) (this will make only the latest reaction count, which is fine)
-        
-
-        color codes:
-            light grey - not enough answers
-            red - No
-            orange - maybe
-            green - yes 
-
-        list_of_messages = [last 7 messages]
-        
-        list_of_outputs = [7 grey]
-        
-        for each message:
-            
-
-        '''
-
     async def on_message(self, message):
         print(f'Message from {message.author}: {message.content}')
         
@@ -159,9 +121,11 @@ class MyClient(discord.Client):
             return
         
         try: 
-
-            #if message.author == master_user and raw_msg[]"/manualmode":
-
+            if message.author == master_user and raw_msg[:7] == "/manual":
+                cmd = raw_msg[8:12]
+                arg = message.content[13:]
+                if cmd == "send":
+                    await message.channel.send(arg)
 
             if raw_msg == "/willysize":
                 await message.channel.send(VERSION_NUMBER)

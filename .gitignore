@@ -4,3 +4,4 @@ __pycache__
 gptkey.txt
 logfile.txt
 env/
+*.json

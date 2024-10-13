@@ -30,8 +30,8 @@ timestamp = time.time()
 
 async def check_reactions():
     print("Running check_reactions()")
-    try: 
-        while True:
+    while True: 
+        try:
             go_next_iter = False
             schedule_channel = discord.Client.get_channel(client, schedule_channel_id)
             graph_channel = discord.Client.get_channel(client, graph_channel_id)
@@ -88,12 +88,11 @@ async def check_reactions():
             last_graph = await graph_channel.fetch_message(graph_channel.last_message_id)
             await last_graph.edit(content=msg_string)
             await asyncio.sleep(10)
-    except Exception:
-        print(traceback.format_exc())
-        bot_test_channel = discord.Client.get_channel(client, bot_test_channel_id)
-        await bot_test_channel.send("check_reations crashed: \n " + traceback.format_exc())
-        
-
+        except Exception:
+            print(traceback.format_exc())
+            bot_test_channel = discord.Client.get_channel(client, bot_test_channel_id)
+            await bot_test_channel.send("check_reations crashed: \n " + traceback.format_exc())
+            
 
 class MyClient(discord.Client):
     
@@ -128,7 +127,9 @@ class MyClient(discord.Client):
                     await message.channel.send(arg)
                 elif cmd == "wiki":
                     await message.channel.send(webscrape.get_random_wiki_page_first_sentence())
-
+                elif cmd == "sudo reboot":
+                    await message.channel.send("Rebooting...")
+                    reboot_system()
 
             if raw_msg == "/willysize":
                 await message.channel.send(VERSION_NUMBER)
@@ -184,12 +185,10 @@ class MyClient(discord.Client):
                         log_msg += line + "\n"
                     await message.channel.send(log_msg)
 
-        except Exception: 
+        except Exception:
             print(traceback.format_exc())
-            await message.channel.send(master_user.mention+" help i made a stinky")
-            with open(os.path.join(cur_dir, "logfile.txt"), "w") as f:
-                f.write(str(datetime.datetime.now())+"\n")
-                f.write(traceback.format_exc())
+            bot_test_channel = discord.Client.get_channel(client, bot_test_channel_id)
+            await bot_test_channel.send("check_reations crashed: \n " + traceback.format_exc())
 
 
 async def create_poll_message():
@@ -202,12 +201,31 @@ async def create_poll_message():
 
 async def wait_for_poll():
     while True:
-        now = datetime.datetime.now()
-        if now.hour == 19 and now.minute== 0 and now.second == 0:
-            await create_poll_message()
-            await asyncio.sleep(1)
-        await asyncio.sleep(0.5)
+        try: 
+            now = datetime.datetime.now()
+            if now.hour == 19 and now.minute== 0 and now.second == 0:
+                await create_poll_message()
+                await asyncio.sleep(1)
+            await asyncio.sleep(0.5)
+        except Exception:
+            print(traceback.format_exc())
+            bot_test_channel = discord.Client.get_channel(client, bot_test_channel_id)
+            await bot_test_channel.send("check_reations crashed: \n " + traceback.format_exc())
 
+async def wait_for_reboot():
+    while True:
+        try: 
+            now = datetime.datetime.now()
+            if now.hour == 7 and now.minute== 0 and now.second == 0:
+                reboot_system()
+        except Exception:
+            print(traceback.format_exc())
+            bot_test_channel = discord.Client.get_channel(client, bot_test_channel_id)
+            await bot_test_channel.send("check_reations crashed: \n " + traceback.format_exc())
+
+def reboot_system():
+    print("Rebooting system.")
+    os.system("sudo reboot")
 
 cur_dir = pathlib.Path(__file__).parent.resolve()
 

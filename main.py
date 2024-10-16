@@ -127,7 +127,7 @@ class MyClient(discord.Client):
                     await message.channel.send(arg)
                 elif cmd == "wiki":
                     await message.channel.send(webscrape.get_random_wiki_page_first_sentence())
-                elif cmd == "sudo reboot":
+                elif cmd == "reboot":
                     await message.channel.send("Rebooting...")
                     reboot_system()
 

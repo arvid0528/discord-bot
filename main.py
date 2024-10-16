@@ -121,14 +121,13 @@ class MyClient(discord.Client):
         
         try: 
             if message.author == master_user and raw_msg[:7] == "/manual":
-                cmd = raw_msg[8:12]
-                arg = message.content[13:]
+                cmd = raw_msg.split(" ")[1]
+                arg = raw_msg.split(" ")[2]
                 if cmd == "send":
                     await message.channel.send(arg)
                 elif cmd == "wiki":
                     await message.channel.send(webscrape.get_random_wiki_page_first_sentence())
                 elif cmd == "reboot":
-                    print("reboooting")
                     await message.channel.send("Rebooting...")
                     reboot_system()
 

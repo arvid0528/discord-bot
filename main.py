@@ -128,6 +128,7 @@ class MyClient(discord.Client):
                 elif cmd == "wiki":
                     await message.channel.send(webscrape.get_random_wiki_page_first_sentence())
                 elif cmd == "reboot":
+                    print("reboooting")
                     await message.channel.send("Rebooting...")
                     reboot_system()
 

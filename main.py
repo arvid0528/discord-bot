@@ -122,7 +122,7 @@ class MyClient(discord.Client):
         try: 
             if message.author == master_user and raw_msg[:7] == "/manual":
                 cmd = raw_msg.split(" ")[1]
-                arg = raw_msg.split(" ")[2]
+                arg = raw_msg.split(" ")[2:]
                 if cmd == "send":
                     await message.channel.send(arg)
                 elif cmd == "wiki":

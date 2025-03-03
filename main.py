@@ -107,7 +107,7 @@ class MyClient(discord.Client):
         
         message.attachments
 
-        raw_msg = message.content.lower()
+        raw_msg = message.content
 
         master_user = await client.fetch_user(226412002866757642)
         
@@ -120,8 +120,8 @@ class MyClient(discord.Client):
             return
         
         try: 
-            if message.author == master_user and raw_msg[:7] == "/manual":
-                cmd = raw_msg.split(" ")[1]
+            if message.author == master_user and raw_msg[:7].lower() == "/manual":
+                cmd = raw_msg.split(" ")[1].lower()
                 arg = raw_msg.split(" ")[2:]
                 arg = " ".join(arg)
                 if cmd == "send":

@@ -15,7 +15,7 @@ import webscrape
 import time
 import datetime
 
-VERSION_NUMBER = 0.1
+VERSION_NUMBER = 0.2
 
 swearwords = ["fuck", "shit", "cunt", "dick", "cum", "piss", "ass", "hell", "cock", "slut", "prick", "bitch", "sex", "nigga", "nigger"]
 compliment_comments = []
